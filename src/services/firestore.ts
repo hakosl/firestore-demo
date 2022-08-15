@@ -52,10 +52,9 @@ export const getThings = () => {
 export const onThingsUpdate = (
   onNext: (snapshot: QuerySnapshot<Thing>) => void,
   onError?: (error: FirestoreError) => void,
-  onCompletion?: () => void,
 ) => {
   const thingsQueryOrderedByDate = query(thingsCol, orderBy('created'));
-  return onSnapshot(thingsQueryOrderedByDate, onNext, onError, onCompletion);
+  return onSnapshot(thingsQueryOrderedByDate, onNext, onError);
 };
 
 export const addThing = (thingText: string) => {

@@ -16,15 +16,11 @@ function App() {
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    setLoading(true);
     const unsubscribe = onThingsUpdate(
       (thingsSnap) => {
-        const things = thingsSnap.docs
-          .map((thing) => {
-            if (!thing.exists()) return null;
-            return { ...(thing.data() as Thing), id: thing.id };
-          })
-          .filter((thing) => !!thing) as ThingWithId[];
+        const things = thingsSnap.docs.map((thing) => {
+          return { ...(thing.data() as Thing), id: thing.id };
+        });
 
         setError('');
         setThings(things);
@@ -38,7 +34,8 @@ function App() {
     return unsubscribe;
   }, []);
 
-  const newThing = () => {
+  const newThing = (e) => {
+    e.preventDefault();
     if (!text) return;
     addThing(text);
     setText('');
@@ -49,7 +46,7 @@ function App() {
   return (
     <div className='App card bg-neutral text-neutral-content w-96 m-auto'>
       <div className='card-body flex flex-col items-start gap-2'>
-        <label className='input-group justify-center'>
+        <form className='input-group justify-center' onSubmit={newThing}>
           <input
             type='text'
             id='thingInput'
@@ -58,10 +55,10 @@ function App() {
             onChange={(text) => setText(text.target.value)}
             className='input input-bordered w-full'
           />
-          <button disabled={!text} onClick={newThing} className='btn btn-primary' type='submit'>
+          <button disabled={!text} className='btn btn-primary' type='submit'>
             Add
           </button>
-        </label>
+        </form>
         <div className='divider'></div>
         {!loading || <button className='btn btn-square loading'></button>}
         {loading || things.map((thing) => <ThingItem key={thing.id} thing={thing} />)}
@@ -78,6 +75,10 @@ interface ThingItemProps {
 
 function ThingItem({ thing }: ThingItemProps): JSX.Element {
   const [newThing, setNewThing] = useState(thing.content);
+
+  useEffect(() => {
+    setNewThing(thing.content);
+  }, [thing.content]);
 
   const removeThing = async (thingId: string) => {
     await deleteThing(thingId);
