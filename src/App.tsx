@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import './App.css';
 import { DeleteIcon } from './components/DeleteIcon';
 import firestoreService, {
@@ -34,7 +34,7 @@ function App() {
     return unsubscribe;
   }, []);
 
-  const newThing = (e) => {
+  const newThing = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!text) return;
     addThing(text);
